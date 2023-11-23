@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+</head>
+<body>
+<div id="map"></div>
+</body>
+<script>
+var width = 800;
+var height = 800;
+
+svg = d3.select("#map")
+      .append('svg')
+      .attr('preserveAspectRatio', 'xMaxYMax meet')
+      .attr("width", width)
+      .attr("height", height)
+      .attr('viewBox', '0 0 ' + width + ' ' + height);
+  
+var colorScale = d3.scaleThreshold()
+  .domain([0, 10, 20, 40, 100, 10000])
+  .range(d3.schemeBlues[7]);
+
+var mymap = d3.map();  
+
+d3.queue()
+  .defer(d3.json, "mapshaped-districts.geojson")
+  .defer(d3.csv, "data.csv", function(d) { mymap.set(d["GEOGRAPHY_CODE"], +d["OBS_VALUE"]); })
+  .await(ready);
+
+function ready(error, geojson) {
+  // D3 expects polygon winding contrary to the GeoJSON right-hand rule,
+  // so we need to rewind any polygons in the feature collection
+  var rewoundFeatures = geojson.features.map(function (feature) {
+      return turf.rewind(feature, {reverse: true});
+  });
+  geojson.features = rewoundFeatures;
+
+  var projection = d3.geoMercator()
+      .fitSize([width, height], geojson);
+
+  var path = d3.geoPath().projection(projection);
+
+    // Draw the map
+    svg.append("g")
+        .selectAll("path")
+        .data(geojson.features)
+        .enter().append("path")          
+        .attr("d", path)
+        .attr("fill", function (d) {      
+          var geocode = d.properties["LAD23CD"];
+          var value = mymap.get(geocode) || 0;
+          return colorScale(value);
+        })
+        .style("stroke", "#000")
+        .style("stroke-width", 0.5)
+        .style('stroke-linejoin', 'miter');
+
+}
+</script>
+</html>
