@@ -8,7 +8,7 @@ e.g. from [ONS geo portal](https://geoportal.statistics.gov.uk/datasets/ons::loc
 
 ### transform with mapshaper
 
-[mapshaper.org](mapshaper.org)
+[Mapshaper]([https://mapshaper.org](https://github.com/mbloch/mapshaper))
 
 e.g.
 ```
