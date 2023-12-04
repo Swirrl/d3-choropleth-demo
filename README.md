@@ -2,6 +2,10 @@
 
 Just a hacky d3 demo choropleth.  A long way from production quality!
 
+## Run server
+
+Requiers Node and `npm`. Run `npm install` to set up dependencies and `npm start` to run a server on http://localhost:8000/
+
 ### Get boundaries as geojson 
 
 e.g. from [ONS geo portal](https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-may-2023-boundaries-uk-bfe/about)
