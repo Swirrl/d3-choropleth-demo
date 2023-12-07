@@ -1,10 +1,9 @@
 
 
-
 var width = 800;
 var height = 800;
 
-svg = d3.select("#the-map")
+svg = d3.select("#map")
     .append('svg')
     .attr('preserveAspectRatio', 'xMaxYMax meet')
     .attr("width", width)
@@ -12,8 +11,8 @@ svg = d3.select("#the-map")
     .attr('viewBox', '0 0 ' + width + ' ' + height);
 
 function dataSource() {
-    let set = d3.select('#dataSet').property("value");
-    let year = d3.select('#dataYear').property("value");
+    let set = d3.select('#dataset').property("value");
+    let year = d3.select('#year').property("value");
     return 'data/' + set + 'LAD' + year + '.csv';
 }
 
@@ -26,7 +25,8 @@ function ready(error, geojson, datarows) {
     geojson.features = rewoundFeatures;
     let data = Object.fromEntries(datarows);
 
-    let selectedScheme = d3.select('#colourSelector').property("value");
+    // let selectedScheme = d3.select('#colourSelector').property("value");
+    let selectedScheme = 'interpolateRdPu';
 
     // find min and max the ol' fashioned way
     let min = Infinity, max = -Infinity;
@@ -73,7 +73,4 @@ function render() {
         .await(ready);
 
 }
-render();
-
-d3.selectAll('.map-rerenderer').attr('onchange', 'render()');
 

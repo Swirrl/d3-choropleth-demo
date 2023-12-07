@@ -1,0 +1,94 @@
+:root {
+    --dluhc-blue: #012169;
+    --interaction-blue: #3272AD;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.geospatial {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+.geospatial-controls {
+    width: 40%;
+    padding: 40px;
+    border-right: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+}
+
+.geospatial-preview {
+    width: 60%;
+    background: #f3f2f1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.geospatial-preview__map {
+    height: 100%;
+    aspect-ratio: 1 / 1.41;
+    border: 1px solid #6C6C6C;
+    box-shadow: 0px 4px 10px 0px rgba(0,0,0,0.2);
+    background: white;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.geospatial-preview__map svg {
+    width: 100%;
+    height: 100%;
+}
+
+.geospatial-preview__caption {
+    margin: 0;
+}
+
+.geospatial h1, .geospatial h2, .geospatial h3, .geospatial h4 {
+    color: var(--dluhc-blue);
+}
+
+.govuk-label {
+    font-weight: bold;
+    color: var(--dluhc-blue);
+}
+
+.govuk-button {
+    background-color: var(--interaction-blue);
+    box-shadow: 0 2px 0 var(--dluhc-blue);
+}
+
+.govuk-button:hover {
+    background-color: var(--dluhc-blue);
+}
+
+.govuk-button--secondary {
+    background-color: #f3f2f1;
+    box-shadow: 0 2px 0 #929191;
+}
+
+.govuk-button--secondary:hover {
+    background-color: #dbdad9;
+}
+
+.govuk-select {
+    width: 100%;
+}
+
+.geospatial-footer {
+    margin-top: auto;
+}
+
+.geospatial-footer img {
+    width: 240px;
+    max-width: 100%;
+}

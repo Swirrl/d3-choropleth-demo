@@ -1,52 +1,103 @@
 <!DOCTYPE html>
-<html>
-    <head>
+<html lang="en" class="govuk-template ">
+  <head>
+    <title>Geospatial Capability - GOV.UK</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <!--[if !IE 8]><!-->
+      <link rel="stylesheet" href="stylesheets/govuk-frontend-4.7.0.min.css">
+      <link rel="stylesheet" href="stylesheets/custom.css">
+    <!--<![endif]-->
+    <!--[if IE 8]>
+      <link rel="stylesheet" href="stylesheets/govuk-frontend-ie8-4.7.0.min.css">
+    <![endif]-->
         <script src="https://d3js.org/d3.v4.js"></script>
         <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
         <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
         <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
-        <style>
-.map-container { display: grid; grid-template-columns: 1fr 7fr; }
-        </style>
-    </head>
-    <body>
-        <div class="map-container">
-            <div class="map-controls">
+  </head>
+  <body class="govuk-template__body ">
+    <script>
+      document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
+    </script>
+    
+    <div class="geospatial">
+        <section class="geospatial-controls">
+            <h1 class="govuk-heading-l">Geospatial Capability</h1>
+            <p class="govuk-body">Select options to generate a choropleth map that you can export as XXX format.</p>
+            <form>
 
-                <div>
-                <label for="dataSet">Data</label>
-                <select class="map-rerenderer" id="dataSet">
+                <!-- Data select  -->
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="dataset">
+                        Data
+                    </label>
+                    <select class="govuk-select" id="dataset" name="dataset">
                     <option value="JobseekersAllowance">Jobseeker's Allowance</option>
                     <option value="PopulationEstimates">Population Estimates</option>
-                </select>
+                    </select>
                 </div>
 
-                <div>
-                <label for="dataYear">Year</label>
-                <select class="map-rerenderer" id="dataYear">
-                    <option value="2021">2021</option>
-                    <option value="2022">2022</option>
-                </select>
+                <!-- Other data source -->
+                <details class="govuk-details" data-module="govuk-details">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">
+                            Don’t see the metric / stat you need here?
+                        </span>
+                    </summary>
+                    <div class="govuk-details__text">
+                        The list above is a pre-canned selection of the most popular metrics/stats. you can add one not found by pasting the URL to the metric in NOMIS.
+                    </div>
+
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" for="event-name">
+                            URL to data
+                        </label>
+                        <input class="govuk-input" id="event-name" name="eventName" type="text">
+                      </div>
+                </details>
+
+                <!-- Year select  -->
+                <div class="govuk-form-group">
+                    <label class="govuk-label" for="year">
+                        Year
+                    </label>
+                    <select class="govuk-select" id="year" name="year">
+                        <option value="2022">2022 (most recent)</option>
+                        <option value="2021">2021</option>
+                    </select>
                 </div>
 
-                <div>
-                <label for="colourSelector">Colour scheme</label>
-                <select class="map-rerenderer" id="colourSelector">
-                    <option value="interpolateBlues">Clear Sky</option>
-                    <option value="interpolateGreens">Forest Walk</option>
-                    <option value="interpolateGreys">Monochrome</option>
-                    <option value="interpolateRdPu">Vaporwave Sunset</option>
-                    <option value="interpolateReds">Papercraft Accident</option>
-                    <option value="interpolateYlGn">Dog Owner's Lawn</option>
-                </select>
+                <!-- Buttons  -->
+                <div class="govuk-button-group">
+                    <a class="govuk-button" onclick="render()" data-module="govuk-button">
+                        Generate map
+                    </a>
+                    <button class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                        Export map
+                    </button>
                 </div>
+            </form>
+            <footer class="geospatial-footer">
+                <img src="assets/images/DLUHC Logo.svg" alt="Department for Levelling up, Housing and Communities" class="dluhc-logo" />
+            </footer>
+        </section>
 
+        <section class="geospatial-preview">
+            <div class="geospatial-preview__map">
+                <div id=map>
+                </div>
             </div>
-            <div class="map-display" id="the-map">
-            </div>
-        </div>
-    </body>
-        <script src='map.js'></script>
+            <span class="govuk-body-s geospatial-preview__caption">
+                A4 preview
+            </span>
+        </section>
+    </div>
+
+
+    <script src="javascript/govuk-frontend-4.7.0.min.js"></script>
     <script>
+      window.GOVUKFrontend.initAll()
     </script>
+        <script src='map.js'></script>
+  </body>
 </html>
