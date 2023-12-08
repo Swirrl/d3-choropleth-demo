@@ -1,11 +1,11 @@
 
-
 var width = 800;
 var height = 800;
 
 svg = d3.select("#map")
     .append('svg')
     .attr('preserveAspectRatio', 'xMaxYMax meet')
+    .attr("display", "none")
     .attr("width", width)
     .attr("height", height)
     .attr('viewBox', '0 0 ' + width + ' ' + height);
@@ -48,6 +48,8 @@ function ready(error, geojson, datarows) {
     var path = d3.geoPath().projection(projection);
 
     // Draw the map
+    d3.select("#map").select("img").remove();
+    svg.attr("display", null);
     svg.selectAll('*').remove();
     svg.append("g")
         .selectAll("path")
