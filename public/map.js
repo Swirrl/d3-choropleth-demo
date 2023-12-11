@@ -35,12 +35,10 @@ function ready(error, geojson, datarows) {
         max = Math.max(v, max);
     }
 
-    function gradient(v) {
-        let linear = (v - min) / (max - min); // v mapped to 0..1 linearly
-        // do logarithmic/pow/sqrt/etc scaling here!
-        // alternatively do some binning or whatever
-        return d3[selectedScheme](linear);
-    }
+    let nbins = 7;
+    let scale = d3.scaleThreshold()
+        .domain(ss.jenks(Object.values(data), nbins))
+        .range(d3.schemePuRd[nbins]);
 
     var projection = d3.geoMercator()
         .fitSize([width, height], geojson);
@@ -59,7 +57,7 @@ function ready(error, geojson, datarows) {
         .attr("fill", function (d) {
             var geocode = d.properties["LAD23CD"];
             var value = data[geocode] || 0;
-            return gradient(value);
+            return scale(value);
         })
         .style("stroke", "#000")
         .style("stroke-width", 0.5)
