@@ -1,14 +1,7 @@
 
-var width = 800;
-var height = 800;
-
-svg = d3.select("#map")
-    .append('svg')
-    .attr('preserveAspectRatio', 'xMaxYMax meet')
-    .attr("display", "none")
-    .attr("width", width)
-    .attr("height", height)
-    .attr('viewBox', '0 0 ' + width + ' ' + height);
+let width = 800;
+let height = 800;
+let choroplethBins = 7;
 
 function dataSource() {
     let set = d3.select('#dataset').property("value");
@@ -16,7 +9,7 @@ function dataSource() {
     return 'data/' + set + 'LAD' + year + '.csv';
 }
 
-function ready(error, geojson, datarows) {
+function ready(geojson, datarows) {
     // D3 expects polygon winding contrary to the GeoJSON right-hand rule,
     // so we need to rewind any polygons in the feature collection
     var rewoundFeatures = geojson.features.map(function (feature) {
@@ -35,10 +28,10 @@ function ready(error, geojson, datarows) {
         max = Math.max(v, max);
     }
 
-    let nbins = 7;
+    let scaleDomain = ss.jenks(Object.values(data), choroplethBins);
     let scale = d3.scaleThreshold()
-        .domain(ss.jenks(Object.values(data), nbins))
-        .range(d3.schemePuRd[nbins]);
+        .domain(scaleDomain)
+        .range(d3.schemePuRd[choroplethBins]);
 
     var projection = d3.geoMercator()
         .fitSize([width, height], geojson);
@@ -46,10 +39,15 @@ function ready(error, geojson, datarows) {
     var path = d3.geoPath().projection(projection);
 
     // Draw the map
-    d3.select("#map").select("img").remove();
-    svg.attr("display", null);
-    svg.selectAll('*').remove();
-    svg.append("g")
+    d3.select("#map").selectAll("*").remove();
+    svg = d3.select("#map").append('svg');
+    svg
+        .attr('preserveAspectRatio', 'xMaxYMax meet')
+        .attr("width", width)
+        .attr("height", height)
+        .attr('viewBox', '0 0 ' + width + ' ' + height)
+
+        .append("g")
         .selectAll("path")
         .data(geojson.features)
         .enter().append("path")
@@ -63,14 +61,20 @@ function ready(error, geojson, datarows) {
         .style("stroke-width", 0.5)
         .style('stroke-linejoin', 'miter');
 
+    let legend = d3.legendColor()
+        .labelFormat(d3.format(".0f"))
+        .labels(d3.legendHelpers.thresholdLabels)
+        .scale(scale);
+    let legendNode = svg.append('g')
+        .call(legend);
+    let legendSize = legendNode.node().getBBox();
+    legendNode.attr('transform', `translate(${width-legendSize.width}, ${height-legendSize.height})`);
 }
 
 function render() {
-
-    d3.queue()
-        .defer(d3.json, "mapshaped-districts.geojson")
-        .defer(d3.csv, dataSource(), (d) => [d.GEOGRAPHY_CODE, +d.OBS_VALUE])
-        .await(ready);
-
+    Promise.all([
+        d3.json("mapshaped-districts.geojson"),
+        d3.csv(dataSource(), (d) => [d.GEOGRAPHY_CODE, +d.OBS_VALUE]),
+    ]).then((res) => ready(...res));
 }
 
