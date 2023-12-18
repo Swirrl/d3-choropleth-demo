@@ -18,8 +18,8 @@ function dataSource() {
 }
 
 function mapTitle() {
-    let set = d3.select('#dataset').text();
-    let year = d3.select('#year').text();
+    let set = d3.select('#dataset option:checked').text();
+    let year = d3.select('#year option:checked').text();
     return `${set} ${year}`;
 }
 
