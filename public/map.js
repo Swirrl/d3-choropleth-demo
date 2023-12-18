@@ -36,13 +36,49 @@ function insetZoom(svg, projection, mapNode, bounds) {
         .attr('x', bx).attr('y', by)
         .attr('width', bradius*2).attr('height', bradius*2)
 
-    let g = svg.append('g');
-
-    g.append('use').attr('href', mapNode.attr('href'))
+    let g = svg.append('g')
+    g.append('use')
+        .classed('detail', true)
+        .attr('href', mapNode.attr('href'))
         .attr('clip-path', `url(#${clipPath.attr('id')})`)
         .attr('x', -bx).attr('y', -by)
         .attr('transform', 'scale(2, 2)')
+    g.append('rect')
+        .classed('detail-outline', true)
+        .attr('width', bradius*2).attr('height', bradius*2)
+        .attr('vector-effect', 'non-scaling-stroke')
+        .attr('stroke', '#000')
+        .attr('stroke-width', 1)
+        .attr('fill', 'none')
+        .attr('transform', 'scale(2, 2)')
 
+    return g
+}
+
+function choroplethLegend(svg, scale, props) {
+    window.horrible = scale
+    console.log(scale)
+    let g = svg.append('g')
+    let gBins = g.append('g').classed('bins', true)
+    let binCount = scale.range().length
+    let binWidth = props.width / binCount
+    for (let bin in scale.range()) {
+        let binColour = scale.range()[bin]
+        gBins.append('rect')
+            .attr('x', binWidth * bin)
+            .attr('width', binWidth)
+            .attr('height', props.binHeight)
+            .attr('fill', binColour)
+    }
+    let gLabels = g.append('g').classed('labels', true)
+    for (let point in scale.domain()) {
+        let pointValue = scale.domain()[point]
+        gLabels.append('text')
+            .attr('x', binWidth * point)
+            .attr('dy', props.binHeight)
+            .attr('text-anchor', 'middle')
+            .text(pointValue)
+    }
     return g
 }
 
@@ -82,7 +118,8 @@ function ready(geojson, datarows) {
         // .attr("width", width)
         // .attr("height", height)
         .attr('preserveAspectRatio', 'xMidYMax meet')
-        .attr('viewBox', '0 0 ' + width + ' ' + height);
+        .attr('viewBox', '0 0 ' + width + ' ' + height)
+        .attr('class', 'map-display')
 
     let defs = svg.append('defs');
 
@@ -91,6 +128,7 @@ function ready(geojson, datarows) {
         .selectAll("path")
         .data(geojson.features)
         .enter().append("path")
+        .attr('vector-effect', 'non-scaling-stroke')
         .attr("d", path)
         .attr("fill", function (d) {
             var geocode = d.properties["LAD23CD"];
@@ -98,53 +136,35 @@ function ready(geojson, datarows) {
             return scale(value);
         })
         .style("stroke", "#000")
-        .style("stroke-width", 0.1)
+        .style("stroke-width", 0.5)
         .style('stroke-linejoin', 'miter')
         .attr('x', 0).attr('y', 0)
 
-    let mapNode = svg.append('g').append('use').attr('href', `#${mapDef.attr('id')}`);
+    let mapNode = svg.append('g')
+        // .attr('class', 'debug-rect')
+        .append('use').attr('href', `#${mapDef.attr('id')}`);
 
-    svg.append('g')
-        .append('rect')
-        .attr('x', mapNode.node().getBBox().x)
-        .attr('y', mapNode.node().getBBox().y)
-        .attr('width', mapNode.node().getBBox().width)
-        .attr('height', mapNode.node().getBBox().height)
-        .attr('fill', 'none')
-        .attr('stroke', '#f0f')
-        .attr('stroke-width', 1);
-
-    svg.append('g')
-        .append('rect')
-        .attr('width', width)
-        .attr('height', height)
-        .attr('fill', 'none')
-        .attr('stroke', '#f0f')
-        .attr('stroke-width', 1);
-
-    let legend = d3.legendColor()
-        .shapeWidth(width/choroplethBins/2)
-        .shapeHeight(10)
-        .orient("horizontal")
-        .labelFormat(d3.format(".0f"))
-        .labels(d3.legendHelpers.thresholdLabels)
-        .scale(scale);
-    let legendNode = svg.append('g')
-        .call(legend);
+    let legendNode =
+        choroplethLegend(svg, scale, { width: width*0.75, binHeight: 15 })
+        .classed('choropleth-legend', true)
     let legendSize = legendNode.node().getBBox();
-    legendNode.attr('transform', `translate(${width-legendSize.width}, ${height-legendSize.height})`);
+    let legendBinSize = legendNode.select('.bins').node().getBBox();
+    legendNode
+        .attr('transform', `translate(${width/2-legendBinSize.width/2}, ${height-legendSize.height})`);
 
     let titleNode = svg.append('g');
     titleNode
         .append('text')
-        .text(mapTitle());
+        .text(mapTitle())
+        .attr('width', width/2);
     titleNode.attr('transform', `translate(0, ${titleNode.select('text').node().getBBox().height})`)
 
     let dy = 10;
     for (let insetName in insetBounds) {
         insetZoom(svg, projection, mapNode, insetBounds[insetName])
+            .classed('inset-zoom', true)
             .attr('transform', `translate(${width-50}, ${dy})`)
-            .append('text').text(insetName)
+            .append('text').text(insetName).attr('dy', -1)
         dy += 50;
     }
 

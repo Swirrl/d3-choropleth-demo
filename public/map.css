@@ -1,0 +1,18 @@
+
+.map-display .debug-rect {
+    outline: 1px solid #f0f;
+}
+
+.map-display text {
+    font-size: 10px;
+}
+
+.map-display .choropleth-legend text {
+    font-size: 8px;
+    dominant-baseline: hanging;
+}
+
+.map-display .inset-zoom text {
+    font-size: 6px;
+}
+
