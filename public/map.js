@@ -60,6 +60,13 @@ function choroplethLegend(svg, scale, props) {
     console.log(scale)
     let g = svg.append('g')
     let gBins = g.append('g').classed('bins', true)
+    gBins.append('rect')
+        .attr('width', props.width)
+        .attr('height', props.binHeight)
+        .attr('fill', 'none')
+        .attr('vector-effect', 'non-scaling-stroke')
+        .attr('stroke', '#000')
+        .attr('stroke-width', 2)
     let binCount = scale.range().length
     let binWidth = props.width / binCount
     for (let bin in scale.range()) {
@@ -69,13 +76,16 @@ function choroplethLegend(svg, scale, props) {
             .attr('width', binWidth)
             .attr('height', props.binHeight)
             .attr('fill', binColour)
+            .attr('vector-effect', 'non-scaling-stroke')
+            .attr('stroke', binColour)
+            .attr('stroke-width', 1)
     }
     let gLabels = g.append('g').classed('labels', true)
     for (let point in scale.domain()) {
         let pointValue = scale.domain()[point]
         gLabels.append('text')
             .attr('x', binWidth * point)
-            .attr('dy', props.binHeight)
+            .attr('dy', props.binHeight + 1)
             .attr('text-anchor', 'middle')
             .text(pointValue)
     }
@@ -145,7 +155,7 @@ function ready(geojson, datarows) {
         .append('use').attr('href', `#${mapDef.attr('id')}`);
 
     let legendNode =
-        choroplethLegend(svg, scale, { width: width*0.75, binHeight: 15 })
+        choroplethLegend(svg, scale, { width: width*0.75, binHeight: 10 })
         .classed('choropleth-legend', true)
     let legendSize = legendNode.node().getBBox();
     let legendBinSize = legendNode.select('.bins').node().getBBox();
