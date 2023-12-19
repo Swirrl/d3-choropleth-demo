@@ -3,20 +3,22 @@
     font-family: 'GDS Transport',arial,sans-serif;
 }
 
-.map-display .debug-rect {
-    outline: 1px solid #f0f;
-}
-
 .map-display text {
     font-size: 10px;
 }
 
 .map-display .choropleth-legend text {
-    font-size: 8px;
+    font-size: 4px;
     dominant-baseline: hanging;
 }
 
 .map-display .inset-zoom text {
-    font-size: 6px;
+    font-size: 4px;
 }
+
+.map-display .title text {
+    dominant-baseline: hanging;
+    font-size: 10px;
+}
+
 

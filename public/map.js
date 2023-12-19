@@ -125,8 +125,6 @@ function ready(geojson, datarows) {
     svg = d3.select("#map").append('svg');
 
     svg
-        // .attr("width", width)
-        // .attr("height", height)
         .attr('preserveAspectRatio', 'xMidYMax meet')
         .attr('viewBox', '0 0 ' + width + ' ' + height)
         .attr('class', 'map-display')
@@ -148,34 +146,34 @@ function ready(geojson, datarows) {
         .style("stroke", "#000")
         .style("stroke-width", 0.5)
         .style('stroke-linejoin', 'miter')
-        .attr('x', 0).attr('y', 0)
 
-    let mapNode = svg.append('g')
-        // .attr('class', 'debug-rect')
-        .append('use').attr('href', `#${mapDef.attr('id')}`);
+    let mapGroup = svg.append('g')
+        .attr('transform', `translate(10, 15) scale(0.9, 0.9)`)
+    let mapNode = mapGroup
+        .append('use').attr('href', `#${mapDef.attr('id')}`)
 
     let legendNode =
-        choroplethLegend(svg, scale, { width: width*0.75, binHeight: 10 })
+        choroplethLegend(svg, scale, { width: width*0.75, binHeight: 6 })
         .classed('choropleth-legend', true)
     let legendSize = legendNode.node().getBBox();
     let legendBinSize = legendNode.select('.bins').node().getBBox();
     legendNode
         .attr('transform', `translate(${width/2-legendBinSize.width/2}, ${height-legendSize.height})`);
 
-    let titleNode = svg.append('g');
-    titleNode
-        .append('text')
+    let titleNode = svg.append('g')
+        .classed('title', true)
+        .attr('transform', `translate(${width/2}, 2)`)
+    titleNode.append('text')
+        .attr('text-anchor', 'middle')
         .text(mapTitle())
-        .attr('width', width/2);
-    titleNode.attr('transform', `translate(0, ${titleNode.select('text').node().getBBox().height})`)
 
-    let dy = 10;
+    let dy = 25;
     for (let insetName in insetBounds) {
         insetZoom(svg, projection, mapNode, insetBounds[insetName])
             .classed('inset-zoom', true)
             .attr('transform', `translate(${width-50}, ${dy})`)
             .append('text').text(insetName).attr('dy', -1)
-        dy += 50;
+        dy += 55;
     }
 
 }
